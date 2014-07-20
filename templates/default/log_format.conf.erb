@@ -1,0 +1,11 @@
+server {
+  log_format  ltsv  "remote_addr:$remote_addr\t"
+  "remote_user:$remote_user\t"
+  "time_local:$time_local\t"
+  "request:$request\t"
+  "request_time:$request_time\t"
+  "status:$status\t"
+  "body_bytes_sent:$body_bytes_sent\t"
+  "http_refer:$http_referer\t"
+  "http_user_agent:$http_user_agent";
+}

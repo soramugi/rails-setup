@@ -1,0 +1,18 @@
+server {
+  <% if node['rails-setup']['user'] == 'vagrant' %>
+  listen          81;
+  <% else %>
+  listen          80;
+  <% end %>
+  server_name     <%= node['rails-setup']['html'] %>;
+  root            /var/www/<%= node['rails-setup']['html'] %>/;
+  access_log      /var/log/nginx/<%= node['rails-setup']['html'] %>.access.log ltsv;
+  error_log       /var/log/nginx/<%= node['rails-setup']['html'] %>.error.log;
+
+  location ~ ^/(assets|system)/ {
+    gzip_static on;
+    expires max;
+    add_header Cache-Control public;
+  }
+
+}

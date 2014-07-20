@@ -1,0 +1,27 @@
+upstream rails_server {
+  server unix:<%= node['rails-setup']['deploy_to'] %>/shared/tmp/sockets/unicorn.sock;
+}
+server {
+  listen          80 default_server;
+  <% if node['rails-setup']['server_names'] != [] %>
+  server_name     <%= node['rails-setup']['server_names'].join(' ') %>;
+  <% end %>
+  root            <%= node['rails-setup']['deploy_to'] %>/current/public/;
+  access_log      /var/log/nginx/<%= node['rails-setup']['application'] %>.access.log ltsv;
+  error_log       /var/log/nginx/<%= node['rails-setup']['application'] %>.error.log;
+
+  location / {
+    if (-f $request_filename) { break; }
+    proxy_set_header X-Real-IP  $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Host $http_host;
+    proxy_pass http://rails_server;
+  }
+
+  location ~ ^/(assets|system)/ {
+    gzip_static on;
+    expires max;
+    add_header Cache-Control public;
+  }
+
+}
